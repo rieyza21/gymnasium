@@ -20,7 +20,7 @@ public class User implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private int id;
 
     private String firstName;
 
@@ -29,8 +29,6 @@ public class User implements UserDetails {
     private String username;
 
     private String password;
-
-
 
     @Enumerated(value = EnumType.STRING)
     private Role role;

@@ -1,6 +1,7 @@
 package com.project.gymnasium.controller;
 
 import com.project.gymnasium.model.Booking;
+import com.project.gymnasium.model.User;
 import com.project.gymnasium.service.BookingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
