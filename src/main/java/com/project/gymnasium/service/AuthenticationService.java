@@ -9,42 +9,51 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.xml.sax.ErrorHandler;
 
 import java.util.Optional;
+
+import static org.aspectj.weaver.Shadow.ExceptionHandler;
 
 @Service
 public class AuthenticationService {
 
-    private final AuthenticationManager authenticaationManager;
+    private final AuthenticationManager authenticationManager;
     private final UserRepository repository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
 
-    public AuthenticationService(AuthenticationManager authenticaationManager, UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService) {
-        this.authenticaationManager = authenticaationManager;
+    public AuthenticationService(AuthenticationManager authenticationManager, UserRepository repository, PasswordEncoder passwordEncoder, JwtService jwtService) {
+        this.authenticationManager = authenticationManager;
         this.repository = repository;
         this.passwordEncoder = passwordEncoder;
         this.jwtService = jwtService;
     }
 
     public AuthenticationResponse register(User request) {
-        User user = new User();
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setUsername(request.getUsername());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        Optional<User> existingUser = repository.findByUsername(request.getUsername());
 
-        user.setRole(request.getRole());
+        if (existingUser.isPresent()) {
+            throw new IllegalStateException("User already exists");
+        } else {
+            User user = new User();
+            user.setFirstName(request.getFirstName());
+            user.setLastName(request.getLastName());
+            user.setUsername(request.getUsername());
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        user = repository.save(user);
+            user.setRole(Role.USER);
 
-        String token = jwtService.generateToken(Optional.of(user));
+            user = repository.save(user);
 
-        return new AuthenticationResponse(token);
+            String token = jwtService.generateToken(Optional.of(user));
+
+            return new AuthenticationResponse(token);
+        }
     }
 
     public AuthenticationResponse authenticate(User request) {
-        authenticaationManager.authenticate(
+        authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         request.getUsername(),
                         request.getPassword()
