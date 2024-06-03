@@ -24,5 +24,4 @@ public class UserServiceImp implements UserDetailsService {
 
     }
 
-
 }

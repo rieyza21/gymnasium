@@ -19,6 +19,13 @@ public class UserService {
         return repository.findAll();
     }
 
+    public User updateUserDetails(int id, String phoneNumber, String address) {
+        User user = repository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        user.setPhoneNumber(phoneNumber);
+        user.setAddress(address);
+        return repository.save(user);
+    }
+
     public Optional<User> getUserById(int id) {
         return repository.findById(id);
     }

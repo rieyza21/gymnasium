@@ -4,6 +4,7 @@ package com.project.gymnasium.service;
 import com.project.gymnasium.model.AuthenticationResponse;
 import com.project.gymnasium.model.Role;
 import com.project.gymnasium.model.User;
+import com.project.gymnasium.model.UserType;
 import com.project.gymnasium.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -37,12 +38,18 @@ public class AuthenticationService {
             throw new IllegalStateException("User already exists");
         } else {
             User user = new User();
-            user.setFirstName(request.getFirstName());
-            user.setLastName(request.getLastName());
+            user.setName(request.getName());
+            user.setEmail(request.getEmail());
             user.setUsername(request.getUsername());
             user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-            user.setRole(Role.USER);
+            user.setRole(Role.ADMIN);
+
+            if (user.getEmail().endsWith("@apps.ipb.ac.id")) {
+                user.setType(UserType.IPB);
+            } else {
+                user.setType(UserType.UMUM);
+            }
 
             user = repository.save(user);
 
