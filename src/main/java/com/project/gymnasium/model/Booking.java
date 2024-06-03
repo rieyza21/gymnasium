@@ -47,10 +47,10 @@ public class Booking {
         private Range<LocalDateTime> bookingDates;
 
         @Transient
-        private BigDecimal hourlyRate;
+        private PriceList hourlyRate;
 
         @Transient
-        private BigDecimal dailyRate;
+        private PriceList dailyRate;
 
         @Transient
         private BigDecimal totalHourlyPrice;
@@ -82,28 +82,18 @@ public class Booking {
                         long durationInHours = Duration.between(start, end).toHours();
                         long durationInDays = Duration.between(start, end).toDays();
 
-                        if (bookingType.equals(BookingType.GYMNASIUM)) {
-                                setHourlyRate(new BigDecimal("30000"));
-                                setDailyRate(new BigDecimal("300000"));
-                        } else if (bookingType.equals(BookingType.BASKETBALL_FIELD)) {
-                                setHourlyRate(new BigDecimal("20000"));
-                                setDailyRate(new BigDecimal("200000"));
-                        } else if (bookingType.equals(BookingType.TENNIS_TABLE)) {
-                                setHourlyRate(new BigDecimal("10000"));
-                                setDailyRate(new BigDecimal("100000"));
-                        }
-
-                        totalHourlyPrice = hourlyRate.multiply(BigDecimal.valueOf(durationInHours));
-                        totalDailyPrice = dailyRate.multiply(BigDecimal.valueOf(durationInDays));
+                        totalHourlyPrice = hourlyRate.getHourlyRate().multiply(BigDecimal.valueOf(durationInHours));
+                        totalDailyPrice = dailyRate.getDailyRate().multiply(BigDecimal.valueOf(durationInDays));
 
                         totalPrice = totalHourlyPrice.add(totalDailyPrice);
 
-                        if (userType != null && userType.equals(userType.IPB)) {
+                        if (userType != null && userType.equals(UserType.IPB)) {
                                 totalPrice = totalPrice.multiply(new BigDecimal("0.8"));
                         }
 
                         setTotalPrice(totalPrice);
                 }
+
         }
 
 }

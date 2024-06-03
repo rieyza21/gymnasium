@@ -28,6 +28,17 @@ public class BookingController {
 
     }
 
+    @PutMapping("/{id}/approve")
+    public ResponseEntity<?> approveBooking(@PathVariable(value = "id") String id) {
+        bookingService.approveBooking(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/user/{username}")
+    public List<Booking> getBookingsByUser(@PathVariable String username) {
+        return bookingService.getBookingsByUser(username);
+    }
+
     @GetMapping("/get")
     public List<Booking> getAllBookings() {
         return bookingService.getAllBookings();
@@ -41,12 +52,6 @@ public class BookingController {
     @PutMapping("/update/{id}")
     public Booking updateBooking(@PathVariable String id, @RequestBody Booking bookingDetails) {
         return bookingService.updateBooking(id, bookingDetails);
-    }
-
-    @PutMapping("/{id}/approve")
-    public ResponseEntity<?> approveBooking(@PathVariable(value = "id") String id) {
-        bookingService.approveBooking(id);
-        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/delete/{id}")

@@ -43,14 +43,20 @@ public class BookingService {
             booking.setUser(user);
             booking.setUserType(user.getType());
             booking.setBookingStatus(BookingStatus.PENDING);
+            Booking savedBooking = bookingRepository.save(booking);
             String message = String.format("Dear %s,\n\nYour booking has been created and is pending approval.\n\nBooking Details:\n%s\n\nBest Regards,\nGymnasium Team",
                     user.getName(), booking.toString());
             mailService.sendMail(user.getEmail(), "Booking Created", message);
+            return savedBooking;
         } else {
             throw new IllegalStateException("Current user not found");
         }
+    }
 
-        return bookingRepository.save(booking);
+    public List<Booking> getBookingsByUser(String username) {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User with username " + username + " not found in the database"));
+        return bookingRepository.findByUser(user);
     }
 
     public List<Booking> getAllBookings() {
@@ -73,7 +79,7 @@ public class BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        booking.setBookingStatus(BookingStatus.APPROVED);
+        booking.setBookingStatus(BookingStatus.CONFIRMED);
         bookingRepository.save(booking);
         String message = String.format("Dear %s,\n\nYour booking has been approved.\n\nBooking Details:\n%s\n\nBest Regards,\nGymnasium Team",
                 booking.getUser().getName(), booking.toString());
